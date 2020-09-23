@@ -1,0 +1,27 @@
+.button {
+    width: 50%;
+    height: 50px;
+    box-sizing: border-box;
+    padding: 15px 57px;
+    background: #FFFFFF;
+    border: 1px solid #DFE5EC;
+    cursor: pointer;
+
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #4A4A4A;
+
+    input {
+        display: none;
+    }
+
+    &_active {
+        background: #2196F3;
+        color: #FFFFFF;
+    }
+}

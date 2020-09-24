@@ -1,9 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {bindActionCreators} from 'redux'
+import {connect} from 'react-redux';
+import * as actions from '../../actions';
 
 import './Button.modules.scss';
 
-const Button = ({flightType, changeFlightType}) => { 
+const Button = ({flightType, toggleFlightType}) => { 
+
+    const changeFlightType = (event) => {
+        flightType.forEach(type => {
+            if(type.id === event.target.value) {
+                toggleFlightType(event.target.value)
+            }
+        });
+    }    
 
     const buttons = flightType.map(({id, title, isChecked}) => {
         const classes = isChecked ? "button button_active" : "button"
@@ -31,8 +42,21 @@ const Button = ({flightType, changeFlightType}) => {
 
 Button.propTypes = {
     flightType: PropTypes.arrayOf(PropTypes.object).isRequired, 
-    changeFlightType: PropTypes.func.isRequired,
-}
+    toggleFlightType: PropTypes.func.isRequired,
+} 
 
-export default Button;
+const mapStateToProps = (state) => {
+    return {flightType: state.flightType};
+};
+
+const mapDispatchToProps = (dispatch) => {
+    const {toggleFlightType} = bindActionCreators(actions, dispatch)
+
+    return {
+        toggleFlightType: (id) => dispatch(toggleFlightType(id)), 
+    }
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Button);
 

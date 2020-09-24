@@ -28,11 +28,6 @@
         box-sizing: border-box;
         border-radius: 9px;
         overflow: hidden;
-        
-        &:active, &:focus {
-            display: none;
-        }
-
     } 
 
     &__flights {

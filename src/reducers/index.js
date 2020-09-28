@@ -10,10 +10,24 @@ const initialState = {
         {id:"cheapest", title: "самый дешевый", isChecked:true},
         {id:"fastest", title: "самый быстрый", isChecked:false},
     ],
+    searchID: {},
+    ticketsData: [],
 }
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
+        case 'SEARCH_ID_FETCHED': {
+            return {
+                ...state,
+                searchID: action.id
+            }
+        }
+        case 'TICKETS_LOADED': {
+            return {
+                ...state,
+                ticketsData: action.data
+            }
+        }
         case 'ALL_CHANGES_ACTIVE': {
             return {
                 ...state,

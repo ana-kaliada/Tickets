@@ -1,40 +1,75 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { format, add } from 'date-fns';
 
 import './Ticket.modules.scss';
-import Logo from './img/S7Logo.png'
 
-const Ticket = () => {
+
+const Ticket = ({ticket}) => {
+    const {price, carrier, segments: [there, back]} = ticket;
+
+    const duration = (mins) => `${Math.trunc(mins / 60)}ч ${mins % 60}м`;
+
+    const flightTime = (date, mins) => {
+        const flightStart = format(new Date(date), 'HH:mm');
+        const flightEnd = format(add(new Date(date), {minutes: mins}), 'HH:mm');
+        return `${flightStart} - ${flightEnd}`
+    };   
     
-
+    const stopsNumber = (arr) => {
+        let stops;
+        switch(arr.length) {
+            case 0: stops = "Без пересадок"; break;
+            case 1: stops = "1 пересадка"; break;
+            default: stops = `${arr.length} пересадки`;
+        }
+        return stops
+    };
+    
     return (
         <div className="ticket">
-            <span className="ticket__price">12 400</span>
-            <div className="ticket__company-logo"><img src={Logo} alt="S7"/></div>
+            <span className="ticket__price">{price}</span>
+            <div className="ticket__company-logo"><img src={`//pics.avs.io/99/36/${carrier}.png`} alt={carrier}/></div>
 
             <div className="ticket__destination"> 
-                <div className="ticket__descr"> MOV - HKT
-                    <div>10:45 - 08:00</div></div>
+                <div className="ticket__descr"> {there.origin} - {there.destination}
+                    <div>{flightTime(there.date, there.duration)}</div></div>
 
                 <div className="ticket__descr"> в пути
-                    <div>21ч 15м</div></div>
+                    <div>{duration(there.duration)}</div></div>
 
-                <div className="ticket__descr"> 2 пересадки
-                    <div>HGK, JNB</div></div>
+                    <div className="ticket__descr">
+                    {stopsNumber(there.stops)}
+                    <div>{there.stops.join(', ')}</div></div>
             </div>
 
             <div className="ticket__destination"> 
-                <div className="ticket__descr"> HKT - MOV 
-                    <div>11:20 - 00:50</div></div>
+                <div className="ticket__descr"> {back.origin} - {back.destination}
+                    <div>{flightTime(back.date, back.duration)}</div></div>
 
                 <div className="ticket__descr"> в пути
-                    <div>13ч 30м</div></div>
+                    <div>{duration(back.duration)}</div></div>
 
-                <div className="ticket__descr"> 1 пересадка
-                    <div>HGK</div></div>
+                <div className="ticket__descr">
+                    {stopsNumber(back.stops)}
+                    <div>{back.stops.join(', ')}</div></div>
             </div>
 
         </div>
     )
+}
+
+Ticket.defaultProps = {
+    price: 0, 
+    carrier: "", 
+    segments: [],
+}
+
+Ticket.propTypes = {
+    ticket: PropTypes.objectOf(PropTypes.any).isRequired,
+    price: PropTypes.number, 
+    carrier: PropTypes.string, 
+    segments: PropTypes.arrayOf(PropTypes.object),
 }
 
 export default Ticket;

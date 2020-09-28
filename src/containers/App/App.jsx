@@ -1,15 +1,17 @@
 import React from 'react';
-/* import WithTicketsServices from '../../components/hoc/WithTicketsServices'; */
+import {connect} from 'react-redux';
+
+import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
 
 import Button from '../../components/Button';
-import Ticket from '../../components/Ticket';
+import TicketsList from "../TickestList";
 import Filter from '../../components/Filter';
 
 import './App.modules.scss';
 import Logo from './img/Logo.png';
 
 const App = () => {   
-    
+        
     return (
         <section className="results">
             
@@ -23,17 +25,11 @@ const App = () => {
 
                 <Button />
 
-                <ul className="results__tickets">
-                    <li><Ticket /></li>
-                    <li><Ticket /></li>
-                    <li><Ticket /></li>
-                    <li><Ticket /></li>
-                    <li><Ticket /></li>
-                </ul>
-            </main>
+                <TicketsList /></main>
 
         </section>
     );
 }
 
-export default App;
+
+export default WithTicketsServices()(connect()(App))

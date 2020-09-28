@@ -1,3 +1,17 @@
+const searchIdFetched = (id) => {
+    return {
+        type: 'SEARCH_ID_FETCHED',
+        id,
+    };
+};
+
+const ticketsLoaded = (data) => {
+    return {
+        type: 'TICKETS_LOADED',
+        data,
+    };
+}
+
 const allChangesActive = () => {
     return {
         type: 'ALL_CHANGES_ACTIVE',
@@ -34,6 +48,8 @@ const toggleFlightType = (id) => {
 
 
 export {
+    searchIdFetched,
+    ticketsLoaded,
     allChangesActive,
     allChangesDisabled,
     changeActive,

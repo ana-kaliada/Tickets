@@ -10,30 +10,35 @@ import Ticket from '../../components/Ticket';
 
 import data from './response.json';
 
-
 const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicketsFetched, ticketsData, changes, flightType}) => {
     
     const subscribe = async() => {
         
-        /* const response = await TicketsServices.getTickets();
-        if(!response.stop) {
-            const res = await subscribe();
-            ticketsLoaded(res.tickets);
-        } 
-
+        const response = await TicketsServices.getTickets();
         ticketsLoaded(response.tickets);
-        allTicketsFetched(); */
-        setTimeout(() => ticketsLoaded(data.tickets), 2000);
+        
+        if(!response.stop) {
+            await subscribe();
+        }  
+        allTicketsFetched(); 
+        /* setTimeout(() => ticketsLoaded(data.tickets), 2000);
         setTimeout(() => ticketsLoaded(data.tickets), 4000);
         setTimeout(() => ticketsLoaded(data.tickets), 6000);
-        setTimeout(() => allTicketsFetched(), 10000); 
-    };
+        setTimeout(() => allTicketsFetched(), 10000);  */
+    };    
     
     useEffect(() => {
-        if(changes.length !== 0) {
-            fetchingTickets();
-            subscribe();
+        async function fetchData() {
+            await TicketsServices.getSearchId();
+
+            if(changes.length !== 0) {
+                fetchingTickets();
+                subscribe();
+            } 
         }
+        fetchData();
+
+        
     }, []);
 
     const ticketsContent = () => {
@@ -42,7 +47,7 @@ const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicke
 
         const filteredTickets = ticketFilter(changes, ticketsData, flightType).slice(0,5).map(ticket => {
             maxID += 1;
-            
+
             return (
                 <li key={maxID}>
                     <Ticket ticket={ticket}/>
@@ -51,9 +56,8 @@ const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicke
         });
 
         return filteredTickets;
-    };     
-
-    console.log(ticketsData.length)
+    };   
+    
     
     return (
         <ul className="results__tickets">

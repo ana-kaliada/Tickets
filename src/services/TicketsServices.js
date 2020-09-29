@@ -13,13 +13,13 @@ export default class TicketsServices {
         return response;
     };
 
-    getSearchId = async () => {
+    getSearchId = async () => {        
         this.searchID = (await this.getData("/search")).searchId;
         return this.searchID;
     };
 
     getTickets = async () => {
-        const token = await this.getSearchId();
+        const token = await this.searchID;
         const response = await this.getData(`/tickets?searchId=${token}`);
         
         return response; 

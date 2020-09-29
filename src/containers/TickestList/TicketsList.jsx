@@ -1,79 +1,91 @@
-import React, {Component} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+
 import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
-import {searchIdFetched, ticketsLoaded} from '../../actions'; 
+import {fetchingTickets, ticketsLoaded, allTicketsFetched} from '../../actions'; 
 import {ticketFilter} from '../../utils';
 
 import Ticket from '../../components/Ticket';
 
-class TicketsList extends Component { 
-    static propTypes = {
-        TicketsServices: PropTypes.objectOf(PropTypes.any).isRequired,
-        searchIdFetched: PropTypes.func.isRequired,
-        ticketsLoaded: PropTypes.func.isRequired,
-        ticketsData: PropTypes.arrayOf(PropTypes.object).isRequired,
-    }; 
+import data from './response.json';
 
-    async componentDidMount() {
-        const {TicketsServices, searchIdFetched} = this.props;
-        const searchId = await TicketsServices.getSearchId();
-        searchIdFetched(searchId);
 
-        this.subscribe();
-    };
-
-    subscribe = async() => {
-        const {TicketsServices, ticketsLoaded} = this.props;
-
-        const response = await TicketsServices.getTickets();
+const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicketsFetched, ticketsData, changes, flightType}) => {
+    
+    const subscribe = async() => {
+        
+        /* const response = await TicketsServices.getTickets();
         if(!response.stop) {
-            const res = await this.subscribe();
+            const res = await subscribe();
             ticketsLoaded(res.tickets);
-        }
+        } 
+
         ticketsLoaded(response.tickets);
+        allTicketsFetched(); */
+        setTimeout(() => ticketsLoaded(data.tickets), 2000);
+        setTimeout(() => ticketsLoaded(data.tickets), 4000);
+        setTimeout(() => ticketsLoaded(data.tickets), 6000);
+        setTimeout(() => allTicketsFetched(), 10000); 
     };
     
-    render() {
-        const {ticketsData, changes, flightType} = this.props;
-        
-        const filteredTickets = ticketFilter(changes, ticketsData, flightType); 
-        
-        const ticketsContent = () => {
-            if(filteredTickets.length === 0) return <div>Тут когда-то будет спиннер</div>
+    useEffect(() => {
+        if(changes.length !== 0) {
+            fetchingTickets();
+            subscribe();
+        }
+    }, []);
+
+    const ticketsContent = () => {
+        let maxID = 4;
+        if(ticketsData.length === 0) return <div className="results__msg">Загружаем....</div>
+
+        const filteredTickets = ticketFilter(changes, ticketsData, flightType).slice(0,5).map(ticket => {
+            maxID += 1;
             
-            const tickets = filteredTickets.slice(0,5).map(ticket => {
-                const {date} = ticket.segments[0];
-                
-                return (
-                    <li key={date}>
-                        <Ticket ticket={ticket}/>
-                    </li>
-                )
-            });
+            return (
+                <li key={maxID}>
+                    <Ticket ticket={ticket}/>
+                </li>
+            )
+        });
 
-            return tickets;
-        }; 
-        
-        return (
-            <ul className="results__tickets">
-                {ticketsContent()}
-            </ul>
-        );
-    };
-}
+        return filteredTickets;
+    };     
 
-const mapStateToProps = ({ticketsData, changes, flightType}) => {
+    console.log(ticketsData.length)
+    
+    return (
+        <ul className="results__tickets">
+            {ticketsContent()}
+        </ul>
+    );
+    
+};
+
+TicketsList.propTypes = {
+    changes: PropTypes.arrayOf(PropTypes.any).isRequired,
+    flightType: PropTypes.string.isRequired,
+    TicketsServices: PropTypes.objectOf(PropTypes.any).isRequired,
+    fetchingTickets: PropTypes.func.isRequired,
+    allTicketsFetched: PropTypes.func.isRequired,
+    ticketsLoaded: PropTypes.func.isRequired,
+    ticketsData: PropTypes.arrayOf(PropTypes.object).isRequired,
+}; 
+
+const mapStateToProps = ({ticketsData, changes, flightType, isLoading}) => {
     return {
         ticketsData,
         changes,
-        flightType
+        flightType,
+        isLoading,
     }
 };
 
 const mapDispatchToProps = {
-    searchIdFetched,
-    ticketsLoaded
+    fetchingTickets,
+    ticketsLoaded,
+    allTicketsFetched,
 };
 
 export default WithTicketsServices()(connect(mapStateToProps, mapDispatchToProps)(TicketsList))

@@ -1,5 +1,4 @@
 const ticketFilter = (changes, tickets, type) => {
-    console.log(changes, type, tickets)
     let filteredTickets;
     
     const activeTickets = tickets.filter((ticket) => {

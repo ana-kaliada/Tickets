@@ -1,7 +1,6 @@
-const searchIdFetched = (id) => {
+const fetchingTickets = () => {
     return {
-        type: 'SEARCH_ID_FETCHED',
-        id,
+        type: 'FETCHING_TICKETS',
     };
 };
 
@@ -9,6 +8,13 @@ const ticketsLoaded = (data) => {
     return {
         type: 'TICKETS_LOADED',
         data,
+    };
+};
+
+    
+const allTicketsFetched = () => {
+    return {
+        type: 'ALL_TICKETS_FETCHED',
     };
 }
 
@@ -48,8 +54,9 @@ const toggleFlightType = (id) => {
 
 
 export {
-    searchIdFetched,
+    fetchingTickets,
     ticketsLoaded,
+    allTicketsFetched,
     allChangesActive,
     allChangesDisabled,
     changeActive,

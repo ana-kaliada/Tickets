@@ -9,14 +9,15 @@ import Filter from '../../components/Filter';
 import './App.modules.scss';
 import Logo from './img/Logo.png';
 
-const App = ({changes}) => {  
+const App = ({changes, isLoading}) => {  
     
     const tickets = (changes.length !== 0) ? <TicketsList /> : <div className="results__msg">Рейсов, подходящих под заданные фильтры, не найдено</div>
+    const classesLogo = isLoading ? "results__logo results__logo_animated" : "results__logo" 
     
     return (
         <section className="results">
             
-            <div className="results__logo">
+            <div className={classesLogo}>
                 <img src={Logo} alt="logo"/></div>
 
             <aside className="results__filters">
@@ -35,12 +36,14 @@ const App = ({changes}) => {
 };
 
 App.propTypes = {
-    changes: PropTypes.arrayOf(PropTypes.any).isRequired
+    changes: PropTypes.arrayOf(PropTypes.any).isRequired,
+    isLoading: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = ({changes}) => {
+const mapStateToProps = ({changes, isLoading}) => {
     return {
-        changes
+        changes,
+        isLoading,
     }
 };
 

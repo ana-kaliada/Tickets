@@ -1,24 +1,28 @@
-import data from './response.json';
-
 const initialState = {
+    ticketsData: [],
     changes: [],
     flightType: "price",
-    searchID: {},
-    ticketsData: data.tickets,
-}
+    isLoading: false
+};
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'SEARCH_ID_FETCHED': {
+        case 'FETCHING_TICKETS': {
             return {
                 ...state,
-                searchID: action.id
+                isLoading: true
             }
         }
         case 'TICKETS_LOADED': {
             return {
                 ...state,
-                ticketsData: [...state.ticketsData, ...action.data]
+                ticketsData:  [...state.ticketsData, ...action.data],
+            }
+        }
+        case 'ALL_TICKETS_FETCHED': {
+            return {
+                ...state,
+                isLoading: false,
             }
         }
         case 'ALL_CHANGES_ACTIVE': {

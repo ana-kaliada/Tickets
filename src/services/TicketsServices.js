@@ -20,8 +20,9 @@ export default class TicketsServices {
 
     getTickets = async () => {
         const token = await this.searchID;
-        const tickets = await this.getData(`/tickets?searchId=${token}`);
-        return tickets.tickets;
+        const response = await this.getData(`/tickets?searchId=${token}`);
+        
+        return response; 
     };
 }
 

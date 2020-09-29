@@ -1,47 +1,45 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux';
-import * as actions from '../../actions';
+import {toggleFlightType} from '../../actions';
 
 import './Button.modules.scss';
 
 const Button = ({flightType, toggleFlightType}) => { 
 
-    const changeFlightType = (event) => {
-        flightType.forEach(type => {
-            if(type.id === event.target.value) {
-                toggleFlightType(event.target.value)
-            }
-        });
-    }    
+    const buttons = [
+        {id:"price", title: "самый дешевый"},
+        {id:"duration", title: "самый быстрый"},
+    ];
 
-    const buttons = flightType.map(({id, title, isChecked}) => {
-        const classes = isChecked ? "button button_active" : "button"
+    const changeFlightType = (event) => flightType !== event.target.value && toggleFlightType(event.target.value);    
 
-        return (
-            <label 
-                key={id}
-                className={classes}>
-                    {title}
-                    <input 
-                        type="radio" 
-                        name="flight-type" 
-                        value={id}  
-                        onChange={(e) => changeFlightType(e)}/>
-            </label>
-        )
-    });
-    
     return (
         <form className="results__toggle-btn"  > 
-            {buttons}
+            {
+                buttons.map(({id, title}) => {
+                    const classes = flightType === id ? "button button_active" : "button"
+
+                    return (
+                        <label 
+                            key={id}
+                            className={classes}>
+                                {title}
+                                <input 
+                                    type="radio" 
+                                    name="flight-type" 
+                                    value={id}  
+                                    onChange={(e) => changeFlightType(e)}/>
+                        </label>
+                    )
+                })
+            }
         </form> 
     )
 }
 
 Button.propTypes = {
-    flightType: PropTypes.arrayOf(PropTypes.object).isRequired, 
+    flightType: PropTypes.string.isRequired, 
     toggleFlightType: PropTypes.func.isRequired,
 } 
 
@@ -49,14 +47,9 @@ const mapStateToProps = (state) => {
     return {flightType: state.flightType};
 };
 
-const mapDispatchToProps = (dispatch) => {
-    const {toggleFlightType} = bindActionCreators(actions, dispatch)
-
-    return {
-        toggleFlightType: (id) => dispatch(toggleFlightType(id)), 
-    }
+const mapDispatchToProps = {
+    toggleFlightType,
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Button);
 

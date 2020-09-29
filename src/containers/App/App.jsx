@@ -1,7 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-
-import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
 
 import Button from '../../components/Button';
 import TicketsList from "../TickestList";
@@ -10,8 +9,10 @@ import Filter from '../../components/Filter';
 import './App.modules.scss';
 import Logo from './img/Logo.png';
 
-const App = () => {   
-        
+const App = ({changes}) => {  
+    
+    const tickets = (changes.length !== 0) ? <TicketsList /> : <div className="results__msg">Рейсов, подходящих под заданные фильтры, не найдено</div>
+    
     return (
         <section className="results">
             
@@ -25,11 +26,22 @@ const App = () => {
 
                 <Button />
 
-                <TicketsList /></main>
+                {tickets}
+
+            </main>
 
         </section>
     );
-}
+};
 
+App.propTypes = {
+    changes: PropTypes.arrayOf(PropTypes.any).isRequired
+};
 
-export default WithTicketsServices()(connect()(App))
+const mapStateToProps = ({changes}) => {
+    return {
+        changes
+    }
+};
+
+export default connect(mapStateToProps)(App);

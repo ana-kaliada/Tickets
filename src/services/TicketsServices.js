@@ -5,16 +5,23 @@ export default class TicketsServices {
     static searchID;
 
     getData = async(url, obj = null) => {
-        const res = await fetch(`${this.baseURL}${url}`, obj)
-        if(!res.ok) {
-            throw new Error(`Could not fetch ${url}, received ${res.status} `);
+        try {
+            const res = await fetch(`${this.baseURL}${url}`, obj)
+            if(!res.ok) {
+                throw res.status;
+            }        
+            return res;
+        } catch(err) {
+            if(err === 500) throw err;
+            throw new Error(`Could not fetch ${url}, error: ${err}`)
         }
-        const response = await res.json();
-        return response;
+        
     };
 
     getSearchId = async () => {        
-        this.searchID = (await this.getData("/search")).searchId;
+        const res = (await this.getData("/search"));
+        this.searchID = (await res.json()).searchId;
+
         return this.searchID;
     };
 

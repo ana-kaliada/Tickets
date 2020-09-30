@@ -8,25 +8,26 @@ import {ticketFilter} from '../../utils';
 
 import Ticket from '../../components/Ticket';
 
-import data from './response.json';
+/* import data from './response.json'; */
 
 const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicketsFetched, ticketsData, changes, flightType}) => {
     
     const subscribe = async() => {
+        try{
+            const response = await TicketsServices.getTickets();
+            const data = await response.json();
+            if(data.stop) {
+                return allTicketsFetched(); 
+            } 
+
+            ticketsLoaded(data.tickets);
+            await subscribe(); 
+
+        } catch(err) {
+            if(err === 500) await subscribe();
+        }
+    };  
         
-        const response = await TicketsServices.getTickets();
-        ticketsLoaded(response.tickets);
-        
-        if(!response.stop) {
-            await subscribe();
-        }  
-        allTicketsFetched(); 
-        /* setTimeout(() => ticketsLoaded(data.tickets), 2000);
-        setTimeout(() => ticketsLoaded(data.tickets), 4000);
-        setTimeout(() => ticketsLoaded(data.tickets), 6000);
-        setTimeout(() => allTicketsFetched(), 10000);  */
-    };    
-    
     useEffect(() => {
         async function fetchData() {
             await TicketsServices.getSearchId();
@@ -37,7 +38,6 @@ const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicke
             } 
         }
         fetchData();
-
         
     }, []);
 
@@ -58,13 +58,11 @@ const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicke
         return filteredTickets;
     };   
     
-    
     return (
         <ul className="results__tickets">
             {ticketsContent()}
         </ul>
     );
-    
 };
 
 TicketsList.propTypes = {

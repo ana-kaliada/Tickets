@@ -13,12 +13,6 @@
         position: absolute;
         top: 50px;
         left: 50%;
-        
-        
-        &_animated {
-            animation: spin 2s linear 0s infinite;
-            transform-origin: center;
-        }
     }
 
     &__filters {
@@ -62,7 +56,3 @@
 }
 
 
-@keyframes spin {
-    from {transform:rotate(0deg);}
-    to {transform:rotate(360deg);}
-}

@@ -4,11 +4,9 @@ import {connect} from 'react-redux';
 
 import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
 import {fetchingTickets, ticketsLoaded, allTicketsFetched} from '../../actions'; 
-import {ticketFilter} from '../../utils';
+import ticketFilter from '../../utils';
 
 import Ticket from '../../components/Ticket';
-
-/* import data from './response.json'; */
 
 const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicketsFetched, ticketsData, changes, flightType}) => {
     

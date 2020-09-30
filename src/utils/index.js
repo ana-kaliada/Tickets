@@ -25,4 +25,4 @@ const ticketFilter = (changes, tickets, type) => {
     return filteredTickets
 };
 
-export {ticketFilter}; 
+export default ticketFilter; 

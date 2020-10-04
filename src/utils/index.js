@@ -6,8 +6,8 @@ const ticketFilter = (changes, tickets, type) => {
         const thereStops = there.stops.length;
         const backStops = back.stops.length;
         
-        if(changes.includes('all')) return ticket;
-        if(changes.includes(thereStops) && changes.includes(backStops)) return ticket;
+        return (changes.includes('all') || (changes.includes(thereStops) && changes.includes(backStops)));
+        
     });
 
     if(type === "price") {

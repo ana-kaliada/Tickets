@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { format, add } from 'date-fns';
 
-import './Ticket.modules.scss';
+import style from './Ticket.module.scss';
 
 
 const Ticket = ({ticket}) => {
@@ -27,34 +27,34 @@ const Ticket = ({ticket}) => {
     };
     
     return (
-        <div className="ticket">
-            <span className="ticket__price">{price}</span>
-            <div className="ticket__company-logo"><img src={`//pics.avs.io/99/36/${carrier}.png`} alt={carrier}/></div>
+        <div className={style.ticket}>
+            <span className={style.price}>{price}</span>
+            <div className={style.logo}><img src={`//pics.avs.io/99/36/${carrier}.png`} alt={carrier}/></div>
 
-            <div className="ticket__destination"> 
-                <div className="ticket__descr"> {there.origin} - {there.destination}
+            <div className={style.destination}> 
+            
+                <div className={style.descr}> {there.origin} - {there.destination}
                     <div>{flightTime(there.date, there.duration)}</div></div>
 
-                <div className="ticket__descr"> в пути
+                <div className={style.descr}> в пути
                     <div>{duration(there.duration)}</div></div>
 
-                    <div className="ticket__descr">
+                    <div className={style.descr}>
                     {stopsNumber(there.stops)}
                     <div>{there.stops.join(', ')}</div></div>
             </div>
 
-            <div className="ticket__destination"> 
-                <div className="ticket__descr"> {back.origin} - {back.destination}
+            <div className={style.destination}> 
+                <div className={style.descr}> {back.origin} - {back.destination}
                     <div>{flightTime(back.date, back.duration)}</div></div>
 
-                <div className="ticket__descr"> в пути
+                <div className={style.descr}> в пути
                     <div>{duration(back.duration)}</div></div>
 
-                <div className="ticket__descr">
+                <div className={style.descr}>
                     {stopsNumber(back.stops)}
                     <div>{back.stops.join(', ')}</div></div>
             </div>
-
         </div>
     )
 }

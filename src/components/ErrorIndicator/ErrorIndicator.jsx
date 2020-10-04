@@ -1,8 +1,13 @@
 import React from 'react';
-import './ErrorIndicator.css';
+import PropTypes from 'prop-types';
+import style from './ErrorIndicator.module.scss';
 
-const ErrorIndicator = () => {
-    return <div className="results__msg">Error!</div>
+const ErrorIndicator = ({children}) => {
+    return <div className={style.error}>{children}</div>
+}
+
+ErrorIndicator.propTypes = {
+    children: PropTypes.string.isRequired
 }
 
 export default ErrorIndicator;

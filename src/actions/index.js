@@ -1,65 +1,112 @@
-const fetchingTickets = () => {
+const fetchTicketsRequest = () => {
     return {
-        type: 'FETCHING_TICKETS',
+        type: 'FETCH_TICKETS_REQUEST',
     };
 };
 
-const ticketsLoaded = (data) => {
+const fetchTicketsSuccess = (data) => {
     return {
-        type: 'TICKETS_LOADED',
-        data,
+        type: 'FETCH_TICKETS_SUCCESS',
+        payload: data,
     };
 };
-
     
-const allTicketsFetched = () => {
+const fetchTicketsAllSuccess = () => {
     return {
-        type: 'ALL_TICKETS_FETCHED',
+        type: 'FETCH_TICKETS_ALL_SUCCESS',
     };
+};
+
+const fetchTicketsError = (error) => {
+    return {
+        type: 'FETCH_TICKETS_ERROR',
+        payload: error,
+    }
+};
+
+const fetchSearchIdRequest = () => {
+    return {
+        type: 'FETCH_SEARCHID_REQUEST'
+    }
+};
+
+const fetchSearchIdSuccess = (token) => {
+    return {
+        type: 'FETCH_SEARCHID_SUCCESS',
+        payload: token
+    }
+};
+
+const fetchSearchIdError = (error) => {
+    return {
+        type: 'FETCH_SEARCHID_SUCCESS',
+        payload: error
+    }
+};
+
+const toggleAllStops = () => {
+    return {
+        type: 'TOGGLE_ALL_STOPS',
+    }
+};
+
+const addStop = (id) => {
+    return {
+        type: 'ADD_STOP',
+        payload: id,
+    };
+};
+
+const removeStop = (id) => {
+    return {
+        type: 'REMOVE_STOP',
+        payload: id,
+    };
+};
+
+const toggleSortBy = (id) => {
+    return {
+        type: 'TOGGLE_SORT_BY',
+        payload: id,
+    };
+};
+
+const fetchSearchId = (TicketsServices) => () => (dispatch) => {
+    dispatch(fetchSearchIdRequest());
+    TicketsServices.getSearchId()
+        .then(data => dispatch(fetchSearchIdSuccess(data)))
+        .catch(err => dispatch(fetchSearchIdError(err)))
 }
 
-const allChangesActive = () => {
-    return {
-        type: 'ALL_CHANGES_ACTIVE',
-    };    
-};
-
-const allChangesDisabled = () => {
-    return {
-        type: 'ALL_CHANGES_DISABLED',
+const fetchTickets = (TicketsServices) => (token) => (dispatch) => {
+    dispatch(fetchTicketsRequest());
+            
+    const subscribe = async() => {
+        try {
+            const data = await TicketsServices.getTickets(token)
+                .then(res => res.json());           
+                
+            dispatch(fetchTicketsSuccess(data.tickets));
+    
+            if(data.stop) return dispatch(fetchTicketsAllSuccess());
+            return subscribe();
+    
+        } catch(err) {
+            if(err === 500) return subscribe()
+            return dispatch(fetchTicketsError(err))
+        }
     };
-};
-
-const changeActive = (id) => {
-    return {
-        type: 'CHANGE_ACTIVE',
-        id,
-    };
-};
-
-const changeDisabled = (id) => {
-    return {
-        type: 'CHANGE_DISABLED',
-        id,
-    };
-};
-
-const toggleFlightType = (id) => {
-    return {
-        type: 'TOGGLE_FLIGHT_TYPE',
-        id,
-    };
-}
-
+    subscribe();
+}; 
 
 
 export {
-    fetchingTickets,
-    ticketsLoaded,
-    allTicketsFetched,
-    allChangesActive,
-    allChangesDisabled,
-    changeActive,
-    changeDisabled,
-    toggleFlightType
+    toggleAllStops,
+    addStop,
+    removeStop,
+    toggleSortBy,
+
+    fetchSearchId,  
+    fetchTickets, 
+    fetchTicketsAllSuccess    
 };

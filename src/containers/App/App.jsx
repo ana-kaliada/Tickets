@@ -1,36 +1,54 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+
+import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
+import {fetchSearchId} from '../../actions'; 
 
 import Button from '../../components/Button';
-import TicketsList from "../TickestList";
 import Filter from '../../components/Filter';
 import Loader from '../../components/Loader';
+import ErrorIndicator from '../../components/ErrorIndicator';
+import TicketsList from "../TickestList";
 
-import './App.modules.scss';
+import style from './App.module.scss';
 import Logo from './img/Logo.png';
 
-const App = ({changes, isLoading}) => {  
+const App = ({stops, loading, error, errorId, fetchId}) => {
+
+    useEffect(()=> {
+        fetchId();
+        if(errorId) throw new Error(errorId);
+    }, [fetchId, errorId])
     
-    const tickets = (changes.length !== 0) ? <TicketsList /> : <div className="results__msg">Рейсов, подходящих под заданные фильтры, не найдено</div>
-    
-    
+
+    function TicketsContent() {
+        if(error)
+            {return <ErrorIndicator>Кажется, что-то пошло не так...</ErrorIndicator>;}
+
+        if(stops.length === 0)
+            {return <ErrorIndicator>Рейсов, подходящих под заданные фильтры, не найдено, пожалуйста выберите хотя бы один фильтр</ErrorIndicator>;}
+
+        return <TicketsList />;
+    }
+       
     return (
-        <section className="results">
+        <section className={style.tickets}>
             
-            <div className="results__logo">
+            <div className={style.logo}>
                 <img src={Logo} alt="logo"/></div>
 
-            <aside className="results__filters">
+            <aside className={style.filters} >
                 <Filter /> </aside>
 
-            <main className="results__flights">
+            <main className={style.flights}>
 
                 <Button />
 
-                {isLoading && <Loader/>}
+                {loading && <Loader/>}
 
-                {tickets}
+                {TicketsContent()}
 
             </main>
 
@@ -38,16 +56,33 @@ const App = ({changes, isLoading}) => {
     );
 };
 
-App.propTypes = {
-    changes: PropTypes.arrayOf(PropTypes.any).isRequired,
-    isLoading: PropTypes.bool.isRequired,
+App.defaultProps = {
+    error: null,
+    errorId: null,
 };
 
-const mapStateToProps = ({changes, isLoading}) => {
+App.propTypes = {
+    stops: PropTypes.arrayOf(PropTypes.any).isRequired,
+    loading: PropTypes.bool.isRequired,
+    error: PropTypes.number,
+    errorId: PropTypes.number,
+    fetchId: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = ({filters: {stops}, ticketsData: {loading, error}, searchId:{error: errorId}}) => {
     return {
-        changes,
-        isLoading,
+        stops,
+        loading,
+        error,
+        errorId
     }
 };
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = (dispatch, {TicketsServices}) => {
+
+    return bindActionCreators({
+        fetchId: fetchSearchId(TicketsServices),
+    }, dispatch)
+}
+
+export default WithTicketsServices()(connect(mapStateToProps, mapDispatchToProps)(App));

@@ -1,0 +1,60 @@
+.tickets {
+    position: relative;
+    margin: 0 auto;
+    padding: 160px 103px 120px 103px;
+    max-width: 960px;
+    height: 1350px;
+    background: #F3F7FA;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.filters {
+    width: 33%;
+    margin-right: 20px;
+}
+
+.flights {
+    width: 66%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+
+@media screen and (max-width: 850px) {
+    .tickets {
+        padding: 160px 50px 120px 50px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .tickets {
+        padding: 100px 15px 30px 15px;
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+    }
+    
+    .logo {
+        top: 10px;
+    }
+    
+    .filters {
+        width: 100%;
+        margin-right: 20px;
+    }
+    
+    .flights {
+        margin-top: 20px;
+        width: 100%;
+    }
+}

@@ -1,12 +1,24 @@
+.buttons {
+    min-height: 50px;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    border-radius: 9px;
+    overflow: hidden;
+} 
+
 .button {
     width: 50%;
-    height: 50px;
+    min-height: 50px;
     box-sizing: border-box;
-    padding: 15px 57px;
+    padding: 5px 30px;
     background: #FFFFFF;
     border: 1px solid #DFE5EC;
     cursor: pointer;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
     font-family: Open Sans;
     font-style: normal;
     font-weight: 600;
@@ -25,3 +37,4 @@
         color: #FFFFFF;
     }
 }
+

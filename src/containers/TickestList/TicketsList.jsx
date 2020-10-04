@@ -1,91 +1,79 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
-import {fetchingTickets, ticketsLoaded, allTicketsFetched} from '../../actions'; 
+import {fetchTickets, fetchTicketsAllSuccess} from '../../actions'; 
 import ticketFilter from '../../utils';
 
 import Ticket from '../../components/Ticket';
 
-const TicketsList = ({TicketsServices, fetchingTickets,  ticketsLoaded, allTicketsFetched, ticketsData, changes, flightType}) => {
-    
-    const subscribe = async() => {
-        try{
-            const response = await TicketsServices.getTickets();
-            const data = await response.json();
-            if(data.stop) {
-                return allTicketsFetched(); 
-            } 
+import style from './TicketsList.module.scss';
 
-            ticketsLoaded(data.tickets);
-            await subscribe(); 
 
-        } catch(err) {
-            if(err === 500) await subscribe();
-        }
-    };  
-        
+const TicketsList = ({tickets, error, stops, sortBy, id, fetchTicketsSubscribtion, fetchTicketsSuccess}) => {       
+
     useEffect(() => {
-        async function fetchData() {
-            await TicketsServices.getSearchId();
+        if(tickets.length === 0 && id && stops.length > 0) fetchTicketsSubscribtion(id);
 
-            if(changes.length !== 0) {
-                fetchingTickets();
-                subscribe();
-            } 
-        }
-        fetchData();
-        
+        if(error) throw new Error(error);
+        return () => fetchTicketsSuccess;
     }, []);
 
-    const ticketsContent = () => {
-        let maxID = 4;
-        if(ticketsData.length === 0) return <div className="results__msg">Загружаем....</div>
-
-        const filteredTickets = ticketFilter(changes, ticketsData, flightType).slice(0,5).map(ticket => {
-            maxID += 1;
+    function ticketsContent() {
+        const filteredTickets = ticketFilter(stops, tickets, sortBy).slice(0, 5).map(ticket => {
+            const { date } = ticket.segments[0];
 
             return (
-                <li key={maxID}>
-                    <Ticket ticket={ticket}/>
+                <li key={date}>
+                    <Ticket ticket={ticket} />
                 </li>
-            )
+            );
         });
 
         return filteredTickets;
     };   
     
     return (
-        <ul className="results__tickets">
+        <ul className={style.tickets}>
             {ticketsContent()}
         </ul>
-    );
+    ) 
+};
+
+TicketsList.defaultProps = {
+    id: null,
+    error: null,
+
 };
 
 TicketsList.propTypes = {
-    changes: PropTypes.arrayOf(PropTypes.any).isRequired,
-    flightType: PropTypes.string.isRequired,
-    TicketsServices: PropTypes.objectOf(PropTypes.any).isRequired,
-    fetchingTickets: PropTypes.func.isRequired,
-    allTicketsFetched: PropTypes.func.isRequired,
-    ticketsLoaded: PropTypes.func.isRequired,
-    ticketsData: PropTypes.arrayOf(PropTypes.object).isRequired,
+    id: PropTypes.string,
+    tickets: PropTypes.arrayOf(PropTypes.any).isRequired,
+    error: PropTypes.number,
+    stops: PropTypes.arrayOf(PropTypes.any).isRequired,
+    sortBy: PropTypes.string.isRequired,
+    fetchTicketsSubscribtion: PropTypes.func.isRequired,
+    fetchTicketsSuccess: PropTypes.func.isRequired,
 }; 
 
-const mapStateToProps = ({ticketsData, changes, flightType, isLoading}) => {
+const mapStateToProps = ({ticketsData:{tickets, loading, error}, filters:{stops, sortBy}, searchId:{id}}) => {
     return {
-        ticketsData,
-        changes,
-        flightType,
-        isLoading,
+        tickets, 
+        loading, 
+        error,
+        stops, 
+        sortBy,
+        id,
     }
 };
 
-const mapDispatchToProps = {
-    fetchingTickets,
-    ticketsLoaded,
-    allTicketsFetched,
+const mapDispatchToProps = (dispatch, {TicketsServices}) => {
+    return bindActionCreators({  
+        fetchTicketsSubscribtion: fetchTickets(TicketsServices),
+        fetchTicketsSuccess: fetchTicketsAllSuccess
+        }, dispatch); 
 };
 
 export default WithTicketsServices()(connect(mapStateToProps, mapDispatchToProps)(TicketsList))

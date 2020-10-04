@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {allChangesActive, allChangesDisabled, changeActive, changeDisabled} from '../../actions';
+import classNames from 'classnames/bind';
+import * as actions from '../../actions';
 
-import './Filter.modules.scss';
+import style from './Filter.module.scss';
 
+const styleBind = classNames.bind(style);
 
-const Filter = ({changes, allChangesActive, allChangesDisabled, changeActive, changeDisabled}) => { 
+const Filter = ({stops, toggleAllStops, addStop, removeStop}) => { 
 
     const changesNumber = [
         {id:"all", title: "Все"},
@@ -17,30 +19,31 @@ const Filter = ({changes, allChangesActive, allChangesDisabled, changeActive, ch
     ];
     
     const toggleChanges = (id) => {
-        if(id === 'all') return changes.includes(id) ? allChangesDisabled() : allChangesActive();
-        if(changes.includes('all')) return (changeDisabled('all'), changeDisabled(id));
-        if(!changes.includes(id)) {
-            if(!changes.includes('all') && changes.length >= 3) return allChangesActive();
-            return changeActive(id);
-        }
-        return changeDisabled(id);
+        if(id === 'all') return toggleAllStops();
+        if(stops.includes('all')) {
+            removeStop('all');
+            removeStop(id);
+        } 
+        if(stops.includes(id)) return removeStop(id);
+        if(stops.length >= 3) return toggleAllStops();
+        return addStop(id); 
     }; 
     
     return (
-        <fieldset className="filters">
-            <h1 className="filters__title">Количество пересадок</h1>
+        <fieldset className={style.filters}>
+            <h1 className={style.title}>Количество пересадок</h1>
             {
                 changesNumber.map(({id, title}) => {
-                    let classes;
-                    if(changes.includes('all')) classes = "filters__checkbox filters__checkbox_checked";
-                    if(changes.length === 0 || !changes.includes(id)) classes = "filters__checkbox";
-                    if(changes.includes(id)) classes = "filters__checkbox filters__checkbox_checked";
+                    const checkbox = styleBind({
+                        checkbox: true,
+                        checkbox_checked: (stops.includes('all') || stops.includes(id))
+                    });  
 
                     return (
                         <label 
                             key={title}
-                            className="filters__filter"> 
-                            <div className={classes} />
+                            className={style.filter}> 
+                            <div className={checkbox} />
                             <input 
                                 type="checkbox" 
                                 name={id} value={title}  
@@ -55,23 +58,17 @@ const Filter = ({changes, allChangesActive, allChangesDisabled, changeActive, ch
     
 }
 
-const mapStateToProps = (state) => {
-    return {changes: state.changes};
-};
-
-const mapDispatchToProps = {
-    allChangesActive, 
-    allChangesDisabled, 
-    changeActive, 
-    changeDisabled,
+const mapStateToProps = ({filters: {stops}}) => {
+    return {
+        stops
+    };
 };
 
 Filter.propTypes = {
-    changes: PropTypes.arrayOf(PropTypes.any).isRequired,
-    allChangesActive: PropTypes.func.isRequired,
-    allChangesDisabled: PropTypes.func.isRequired,
-    changeActive: PropTypes.func.isRequired,
-    changeDisabled: PropTypes.func.isRequired,
+    stops: PropTypes.arrayOf(PropTypes.any).isRequired,
+    toggleAllStops: PropTypes.func.isRequired,
+    addStop: PropTypes.func.isRequired,
+    removeStop: PropTypes.func.isRequired,
 }  
 
-export default connect(mapStateToProps, mapDispatchToProps)(Filter);
+export default connect(mapStateToProps, actions)(Filter);

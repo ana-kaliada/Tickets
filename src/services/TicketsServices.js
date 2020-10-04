@@ -2,31 +2,22 @@ export default class TicketsServices {
 
     baseURL = "https://aviasales-test-api.java-mentor.com";
 
-    static searchID;
-
-    getData = async(url, obj = null) => {
-        try {
-            const res = await fetch(`${this.baseURL}${url}`, obj)
-            if(!res.ok) {
-                throw res.status;
-            }        
-            return res;
-        } catch(err) {
-            if(err === 500) throw err;
-            throw new Error(`Could not fetch ${url}, error: ${err}`)
-        }
-        
+    getData = async(url, obj = null) => {        
+        const res = await fetch(`${this.baseURL}${url}`, obj)
+        if(!res.ok) {
+            throw res.status;
+        }        
+        return res;                
     };
 
     getSearchId = async () => {        
-        const res = (await this.getData("/search"));
-        this.searchID = (await res.json()).searchId;
+        const res = await this.getData("/search");
+        const result = (await res.json()).searchId;
 
-        return this.searchID;
+        return result;
     };
 
-    getTickets = async () => {
-        const token = await this.searchID;
+    getTickets = async (token) => {
         const response = await this.getData(`/tickets?searchId=${token}`);
         
         return response; 

@@ -1,79 +1,81 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import WithTicketsServices from '../../components/hoc/WithTicketsServices'; 
-import {fetchTickets, fetchTicketsAllSuccess} from '../../actions'; 
+import { getTickets } from '../../services/TicketsServices';
+import { fetchTickets, fetchTicketsAllSuccess } from '../../redux/actions';
 import ticketFilter from '../../utils';
 
 import Ticket from '../../components/Ticket';
 
 import style from './TicketsList.module.scss';
 
+const TicketsList = ({ tickets, error, stops, sortBy, id, fetchTicketsSubscribtion, fetchTicketsSuccess }) => {
+  useEffect(() => {
+    if (tickets.length === 0 && id && stops.length > 0) fetchTicketsSubscribtion(id);
 
-const TicketsList = ({tickets, error, stops, sortBy, id, fetchTicketsSubscribtion, fetchTicketsSuccess}) => {       
+    if (error) throw new Error(error);
+    return () => fetchTicketsSuccess;
+  }, []);
 
-    useEffect(() => {
-        if(tickets.length === 0 && id && stops.length > 0) fetchTicketsSubscribtion(id);
+  function ticketsContent() {
+    const filteredTickets = ticketFilter(stops, tickets, sortBy)
+      .slice(0, 5)
+      .map((ticket) => {
+        const { date } = ticket.segments[0];
 
-        if(error) throw new Error(error);
-        return () => fetchTicketsSuccess;
-    }, []);
+        return (
+          <li key={date}>
+            <Ticket ticket={ticket} />
+          </li>
+        );
+      });
 
-    function ticketsContent() {
-        const filteredTickets = ticketFilter(stops, tickets, sortBy).slice(0, 5).map(ticket => {
-            const { date } = ticket.segments[0];
+    return filteredTickets;
+  }
 
-            return (
-                <li key={date}>
-                    <Ticket ticket={ticket} />
-                </li>
-            );
-        });
-
-        return filteredTickets;
-    };   
-    
-    return (
-        <ul className={style.tickets}>
-            {ticketsContent()}
-        </ul>
-    ) 
+  return <ul className={style.tickets}>{ticketsContent()}</ul>;
 };
 
 TicketsList.defaultProps = {
-    id: null,
-    error: null,
-
+  id: null,
+  error: null,
 };
 
 TicketsList.propTypes = {
-    id: PropTypes.string,
-    tickets: PropTypes.arrayOf(PropTypes.any).isRequired,
-    error: PropTypes.number,
-    stops: PropTypes.arrayOf(PropTypes.any).isRequired,
-    sortBy: PropTypes.string.isRequired,
-    fetchTicketsSubscribtion: PropTypes.func.isRequired,
-    fetchTicketsSuccess: PropTypes.func.isRequired,
-}; 
-
-const mapStateToProps = ({ticketsData:{tickets, loading, error}, filters:{stops, sortBy}, searchId:{id}}) => {
-    return {
-        tickets, 
-        loading, 
-        error,
-        stops, 
-        sortBy,
-        id,
-    }
+  id: PropTypes.string,
+  tickets: PropTypes.arrayOf(PropTypes.any).isRequired,
+  error: PropTypes.number,
+  stops: PropTypes.arrayOf(PropTypes.any).isRequired,
+  sortBy: PropTypes.string.isRequired,
+  fetchTicketsSubscribtion: PropTypes.func.isRequired,
+  fetchTicketsSuccess: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = (dispatch, {TicketsServices}) => {
-    return bindActionCreators({  
-        fetchTicketsSubscribtion: fetchTickets(TicketsServices),
-        fetchTicketsSuccess: fetchTicketsAllSuccess
-        }, dispatch); 
+const mapStateToProps = ({
+  ticketsData: { tickets, loading, error },
+  filters: { stops, sortBy },
+  searchId: { id },
+}) => {
+  return {
+    tickets,
+    loading,
+    error,
+    stops,
+    sortBy,
+    id,
+  };
 };
 
-export default WithTicketsServices()(connect(mapStateToProps, mapDispatchToProps)(TicketsList))
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators(
+    {
+      fetchTicketsSubscribtion: fetchTickets(getTickets),
+      fetchTicketsSuccess: fetchTicketsAllSuccess,
+    },
+    dispatch
+  );
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TicketsList);

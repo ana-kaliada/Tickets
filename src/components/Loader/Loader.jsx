@@ -2,16 +2,15 @@ import React from 'react';
 import './Loader.scss';
 
 const Loader = () => {
-    
-    return (
-        <div className="loader">
-            <div className="loader__item" />
-            <div className="loader__item" />
-            <div className="loader__item" />
-            <div className="loader__item" />
-            <div className="loader__item" />
-        </div>
-    )
-}
+  const items = [1, 2, 3, 4, 5];
+
+  return (
+    <div className="loader">
+      {items.map(() => (
+        <div className="loader__item" />
+      ))}
+    </div>
+  );
+};
 
 export default Loader;
